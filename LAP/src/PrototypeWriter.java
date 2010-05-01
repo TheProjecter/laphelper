@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class PrototypeWriter {
-	public static void writeGaussTrainingFile(ArrayList<GaussPrototype> prototypes, String path) 
+	public static void writeTrainingFile(ArrayList<Prototype> prototypes, String path) 
 			throws Exception {
 		Writer output = new BufferedWriter(new FileWriter(new File(path)));
 		String aContents = toString(prototypes);
@@ -21,23 +21,18 @@ public class PrototypeWriter {
 
 	}
 
-	private static String toString(ArrayList<GaussPrototype> prototypes) {
+	private static String toString(ArrayList<Prototype> prototypes) {
+		Iterator<Prototype> it = prototypes.iterator();
 		String s = "";
-		Iterator<GaussPrototype> it = prototypes.iterator();
-		int tokenCounter = 0;
 		while(it.hasNext()) {
-			tokenCounter ++;
-			GaussPrototype next = it.next();
-//			if((tokenCounter % 3 == 1)) {
-				s += next.getX();
-				s += " ";
-//			} else if((tokenCounter % 3) == 2) {
-				s += next.getY();
-				s += " ";
-//			} else {
-				s += next.getCls();
-				s += "\n";
-//			}
+			Prototype next = it.next();
+			double[] v = next.getV();
+			s = String.valueOf(v[0]);
+			for(int i = 1; i < v.length; i++) {
+				s += " " + String.valueOf(v[i]);
+			}
+			s += next.getCls();
+			s += "\n";
 		}
 		return s;
 	}

@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 public class LpdInterface {
@@ -47,7 +46,7 @@ public class LpdInterface {
 	private static String createClassifier(String weightMode) throws Exception {
 		String content = "";
 		content += gauss2DpHeader;
-		Iterator<GaussPrototype> pIt = DataLoader.loadGauss(Constants.lpdWorkingDir + "\\reduced.lpd").iterator();
+		Iterator<Prototype> pIt = DataLoader.loadPrototypes(Constants.lpdWorkingDir + "\\reduced.lpd").iterator();
 		int count = 0;
 		while(pIt.hasNext()) {
 			count ++;
@@ -65,7 +64,7 @@ public class LpdInterface {
 		} else if(weightMode.equals(Constants.CPW_PROT_WEIGHTS)) {
 			weightPath = Constants.cpwWorkingDir + "\\pweights.cpw";
 		}
-		Iterator<GaussWeight> wIt = DataLoader.loadGaussWeigths(weightPath).iterator();
+		Iterator<PrototypeWeight> wIt = DataLoader.loadWeigths(weightPath).iterator();
 		count = 0;
 		while(wIt.hasNext()) {
 			count ++;
