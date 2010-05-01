@@ -12,7 +12,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 public class Visualizer2D {
-	public static ChartPanel getChartPanel(ArrayList<GaussPrototype> prototypes) {
+	public static ChartPanel getChartPanel(ArrayList<Prototype> prototypes) {
 		JFreeChart chart = ChartFactory.createScatterPlot(
 				"Scatter Plot Demo", // title
 				"X", "Y", // axis labels
@@ -26,17 +26,17 @@ public class Visualizer2D {
         return chartPanel;
 	}
 	
-	private static XYSeriesCollection getDataset(ArrayList<GaussPrototype> prototypes) {
+	private static XYSeriesCollection getDataset(ArrayList<Prototype> prototypes) {
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		XYSeries series1 = new XYSeries("class 1");
 		XYSeries series2 = new XYSeries("class 2");
-		Iterator<GaussPrototype> it = prototypes.iterator();
+		Iterator<Prototype> it = prototypes.iterator();
 		while(it.hasNext()) {
-			GaussPrototype next = it.next();
+			Prototype next = it.next();
 			if(next.getCls() == 1) {
-				series1.add(next.getX(), next.getY());
+				series1.add(next.getV()[0], next.getV()[1]);
 			} else {
-				series2.add(next.getX(), next.getY());
+				series2.add(next.getV()[0], next.getV()[1]);
 			}
 		}
 		dataset.addSeries(series1);
@@ -44,7 +44,7 @@ public class Visualizer2D {
 		return dataset;
 	}
 
-	public static void showData(ArrayList<GaussPrototype> prototypes) {
+	public static void showData(ArrayList<Prototype> prototypes) {
 		JFrame frame = new JFrame();
 		frame.setContentPane(getChartPanel(prototypes));
 		frame.setVisible(true);

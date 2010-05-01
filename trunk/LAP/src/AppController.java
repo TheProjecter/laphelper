@@ -16,11 +16,14 @@ public class AppController {
 	
 	public ChartPanel scatterPlot(File file) {
 		try {
-			ArrayList<GaussPrototype> prototypes = DataLoader.loadGauss(file.getAbsolutePath());
+			ArrayList<Prototype> prototypes = DataLoader.loadPrototypes(file.getAbsolutePath());
+			if((prototypes == null) || (prototypes.size() == 0) || (prototypes.get(0).getV().length != 2)) {
+				throw new Exception("Invalid Prototypes, must have 2 dimensions");
+			}
 			return Visualizer2D.getChartPanel(prototypes);		
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(mainFrame, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
 		return null;
 	}
@@ -32,10 +35,10 @@ public class AppController {
 	public void clean(String path, int k) {
 		try {
 			File file = new File(path);
-			ArrayList<GaussPrototype> prototypes = DataLoader.loadGauss(file.getAbsolutePath());	
-			ArrayList<GaussPrototype> cleaned = Cleaner.clean(prototypes, k);
+			ArrayList<Prototype> prototypes = DataLoader.loadPrototypes(file.getAbsolutePath());	
+			ArrayList<Prototype> cleaned = Cleaner.clean(prototypes, k);
 			String outputPath = Constants.generatedFilePath + "\\cleanedK" + k;
-			PrototypeWriter.writeGaussTrainingFile(cleaned, outputPath);
+			PrototypeWriter.writeTrainingFile(cleaned, outputPath);
 			mainFrame.showScatterPlot(Visualizer2D.getChartPanel(cleaned));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

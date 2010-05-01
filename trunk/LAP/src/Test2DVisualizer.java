@@ -9,7 +9,7 @@ public class Test2DVisualizer extends JFrame {
 	public static final String file = "res\\gauss2DTr";
 	
 	public Test2DVisualizer() throws Exception {
-		JPanel p = Visualizer2D.getChartPanel(DataLoader.loadGauss(file));
+		JPanel p = Visualizer2D.getChartPanel(DataLoader.loadPrototypes(file));
 		this.setContentPane(p);
 		this.setVisible(true);
 		Toolkit toolkit =  Toolkit.getDefaultToolkit ();

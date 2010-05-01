@@ -1,38 +1,42 @@
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 
 public class Cleaner {
 	
-//	private static String gaussData = "res\\gauss2DTr";
-	
-	public static ArrayList<GaussPrototype> clean(ArrayList<GaussPrototype> data, int k) {
-		ArrayList<GaussPrototype> cleanedData = new ArrayList<GaussPrototype>();
-		Iterator<GaussPrototype> it = data.iterator();
+	public static ArrayList<Prototype> clean(ArrayList<Prototype> data, int k) {
+		ArrayList<Prototype> cleanedData = new ArrayList<Prototype>();
+		Iterator<Prototype> it = data.iterator();
 		while(it.hasNext()) {
-			GaussPrototype next = it.next();
+			Prototype next = it.next();
 			if(next.getCls() == classify(next, data, k)) {
 				cleanedData.add(next);
 			}
 		}
-		return cleanedData;
+		return cleanedData;		
 	}
 	
-	private static int classify(GaussPrototype next,
-			ArrayList<GaussPrototype> data, int k) {
+	private static int classify(Prototype next, ArrayList<Prototype> data, int k) {
+		// store k nearest neighbors classes
 		int[] nn = new int[k];
+		// store corresponding distances
 		double[] distances = new double[k];
+		// initialize arrays
 		for(int i = 0; i < k; i++) {
 			distances[i] = Double.MAX_VALUE;
 			nn[i] = -1;
 		}
+		// get through data
 		for(int i = 0; i < data.size(); i++) {
+			// do not consider actual prototype
 			if(data.get(i).equals(next)) {
 				continue;
 			}
-			
-			double distance = Math.sqrt((Math.pow(data.get(i).getX() - next.getX(), 2) +
-					Math.pow(data.get(i).getY() - next.getY(), 2)));
+			// calculate distance between considered prototype
+			double distance = calculateDistance(data.get(i).getV(), next.getV());
+			// update distance and nn array
 			for(int j = distances.length - 1; j >= 0; j --) {
 				if(distance > distances[j]) {
 					break;
@@ -47,20 +51,37 @@ public class Cleaner {
 				}
 			}
 		}
-		int count1 = 0, count2 = 0;
+		// classify
+		Hashtable<Integer, Integer> countTable = new Hashtable<Integer, Integer>();
 		for(int i = 0; i < k; i++) {
-			if(nn[i] == 1) {
-				count1 ++;
+			if(!countTable.containsKey(new Integer(nn[i]))) {
+				countTable.put(new Integer(nn[i]), new Integer(1));
 			} else {
-				count2 ++;
+				int count = countTable.get(nn[i]).intValue();
+				countTable.remove(new Integer(nn[i]));
+				count ++;
+				countTable.put(new Integer(nn[i]), new Integer(count));
 			}
 		}
-		if(count1 > count2) {
-			return 1;
-		} else if(count2 > count1) {
-			return 2;
+		// return class with most neighbors
+		Iterator<Entry<Integer, Integer>> it = countTable.entrySet().iterator();
+		Entry<Integer, Integer> bestEntry = it.next();
+		while(it.hasNext()) {
+			Entry<Integer, Integer> nextEntry = it.next();
+			if(nextEntry.getValue() > bestEntry.getValue()) {
+				bestEntry = nextEntry;
+			}
 		}
-		return nn[0];
+		return bestEntry.getKey();
+	}
+
+	// returns euclidean distance between two prototype data
+	private static double calculateDistance(double[] v, double[] v2) {
+		double sqDiffSum = 0;
+		for(int i = 0; i < v.length; i++) {
+			sqDiffSum += Math.pow(v[i] - v2[i], 2);
+		}
+		return Math.sqrt(sqDiffSum);
 	}
 
 //	public static void main(String[] args) throws Exception {
@@ -68,9 +89,9 @@ public class Cleaner {
 //		Process pp=run.exec(nnwCommand);
 //		int exitVal = pp.waitFor();
 //		System.out.println("Process exitValue: " + exitVal);
-//		ArrayList<GaussPrototype> data = DataLoader.loadGauss(gaussData);
-//		ArrayList<GaussPrototype> cleaned = Cleaner.clean(data, 1);
+//		ArrayList<Prototype> data = DataLoader.loadPrototypes("res\\lin-genderTr");
+//		ArrayList<Prototype> cleaned = Cleaner.clean(data, 3);
 //		Visualizer2D.showData(cleaned);
-//		System.out.println(cleaned.size() / data.size() * 100);
+//		System.out.println(new Double(cleaned.size() / data.size() * 100));
 //	}
 }
